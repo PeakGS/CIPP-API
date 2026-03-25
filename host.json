@@ -20,5 +20,13 @@
       "versionMatchStrategy": "Strict",
       "versionFailureStrategy": "Fail"
     }
+  },
+  "logging": {
+    "logLevel": {
+      "default": "Warning",
+      "Host.Aggregator": "Trace",
+      "Host.Results": "Information",
+      "Function": "Information"
+    }
   }
 }
