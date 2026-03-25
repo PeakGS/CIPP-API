@@ -13,7 +13,8 @@ Function Invoke-ListUserSigninLogs {
     # Interact with query parameters or the body of the request.
     $TenantFilter = $Request.Query.tenantFilter
     $UserID = $Request.Query.UserID
-    $URI = "https://graph.microsoft.com/beta/auditLogs/signIns?`$filter=(userId eq '$UserID')&`$top=$top&`$orderby=createdDateTime desc"
+    $select = 'id,createdDateTime,userDisplayName,userPrincipalName,userId,appDisplayName,appId,status,location,ipAddress,clientAppUsed,riskDetail,riskLevelAggregated,riskLevelDuringSignIn,riskState,riskEventTypes,resourceDisplayName,conditionalAccessStatus,correlationId'
+    $URI = "https://graph.microsoft.com/beta/auditLogs/signIns?`$filter=(userId eq '$UserID')&`$top=$top&`$select=$select"
 
     try {
         $Result = New-GraphGetRequest -uri $URI -tenantid $TenantFilter -noPagination $true -verbose
