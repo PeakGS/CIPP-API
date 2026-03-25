@@ -55,6 +55,7 @@ function New-GraphGetRequest {
         if (!$headers['User-Agent']) {
             $headers['User-Agent'] = "CIPP/$($global:CippVersion ?? '1.0')"
         }
+        $headers['Accept-Encoding'] = 'gzip'
 
         # Track consecutive Graph API failures
         $TenantsTable = Get-CippTable -tablename Tenants
@@ -199,17 +200,19 @@ function New-GraphGetRequest {
                 }
             } while (-not $RequestSuccessful -and $RetryCount -le $MaxRetries)
         } until ([string]::IsNullOrEmpty($NextURL) -or $NextURL -is [object[]] -or ' ' -eq $NextURL)
-        if ($Tenant.PSObject.Properties.Name -notcontains 'LastGraphError') {
-            $Tenant | Add-Member -MemberType NoteProperty -Name 'LastGraphError' -Value '' -Force
-        } else {
-            $Tenant.LastGraphError = ''
+        if ($Tenant.GraphErrorCount -gt 0 -or $Tenant.LastGraphError -ne '') {
+            if ($Tenant.PSObject.Properties.Name -notcontains 'LastGraphError') {
+                $Tenant | Add-Member -MemberType NoteProperty -Name 'LastGraphError' -Value '' -Force
+            } else {
+                $Tenant.LastGraphError = ''
+            }
+            if ($Tenant.PSObject.Properties.Name -notcontains 'GraphErrorCount') {
+                $Tenant | Add-Member -MemberType NoteProperty -Name 'GraphErrorCount' -Value 0 -Force
+            } else {
+                $Tenant.GraphErrorCount = 0
+            }
+            Update-AzDataTableEntity -Force @TenantsTable -Entity $Tenant
         }
-        if ($Tenant.PSObject.Properties.Name -notcontains 'GraphErrorCount') {
-            $Tenant | Add-Member -MemberType NoteProperty -Name 'GraphErrorCount' -Value 0 -Force
-        } else {
-            $Tenant.GraphErrorCount = 0
-        }
-        Update-AzDataTableEntity -Force @TenantsTable -Entity $Tenant
         return $ReturnedData
     } else {
         Write-Error 'Not allowed. You cannot manage your own tenant or tenants not under your scope'
