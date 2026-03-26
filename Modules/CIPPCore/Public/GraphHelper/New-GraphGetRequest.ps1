@@ -46,6 +46,11 @@ function New-GraphGetRequest {
         }
 
         $nextURL = $uri
+        # Default to max page size for Graph list queries to reduce pagination round trips
+        if ($nextURL -match 'graph\.microsoft\.com' -and $nextURL -notmatch '[\?&]\$top=' -and -not $CountOnly) {
+            $separator = if ($nextURL -match '\?') { '&' } else { '?' }
+            $nextURL = "${nextURL}${separator}`$top=999"
+        }
         if ($extraHeaders) {
             foreach ($key in $extraHeaders.Keys) {
                 $headers[$key] = $extraHeaders[$key]

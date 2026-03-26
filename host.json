@@ -27,6 +27,13 @@
       "Host.Aggregator": "Trace",
       "Host.Results": "Information",
       "Function": "Information"
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 5,
+        "excludedTypes": "Request;Exception"
+      }
     }
   }
 }
