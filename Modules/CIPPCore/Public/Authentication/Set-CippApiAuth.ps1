@@ -52,6 +52,8 @@ function Set-CippApiAuth {
     }
 
     $AuthSettings.properties.globalValidation = @{
+        excludedPaths               = @('/api/PublicPing')
+        requireAuthentication       = $true
         unauthenticatedClientAction = 'Return401'
     }
     $AuthSettings.properties.login = @{
